@@ -26,10 +26,11 @@ The configuration details of each machine may be found below.
 | Jump Box | Gateway     | 10.0.0.4   | Linux            |
 | DVWA 1   | Web Server  | 10.0.0.5   | Linux            |
 | DVWA 2   | Web Server  | 10.0.0.6   | Linux            |
-| ELK      | Monitoring  | 10.0.0.8   | Linux            |
+| DVWA 3   | Web Server  | 10.0.0.7   | Linux            |
+| ELK      | Monitoring  | 10.1.0.4   | Linux            |
 
 In addition to the above, Azure has provisioned a **load balancer** in front of all machines except for the jump box. The load balancer's targets are organized into the following availability zones:
-- **Availability Zone 1**: DVWA 1 + DVWA 2
+- **Availability Zone 1**: DVWA 1 + DVWA 2 + DVWA 3
 - **Availability Zone 2**: ELK
 
 ## ELK Server Configuration
@@ -37,44 +38,44 @@ The ELK VM exposes an Elastic Stack instance. **Docker** is used to download and
 
 Rather than configure ELK manually, we opted to develop a reusable Ansible Playbook to accomplish the task. This playbook is duplicated below.
 
-
 To use this playbook, one must log into the Jump Box, then issue: `ansible-playbook install_elk.yml elk`. This runs the `install_elk.yml` playbook on the `elk` host.
 
 ### Access Policies
 The machines on the internal network are _not_ exposed to the public Internet. 
 
-Only the **jump box** machine can accept connections from the Internet. Access to this machine is only allowed from the IP address `64.72.118.76`
-- **Note**: _Your answer will be different!_
+Only the **jump box** machine can accept connections from the Internet. Access to this machine is only allowed from the IP address `1.129.107.205`
 
-Machines _within_ the network can only be accessed by **each other**. The DVWA 1 and DVWA 2 VMs send traffic to the ELK server.
+Machines _within_ the network can only be accessed by **each other**. The DVWA 1, DVWA 2 and DVWA 3 VMs send traffic to the ELK server.
 
 A summary of the access policies in place can be found in the table below.
 
 | Name     | Publicly Accessible | Allowed IP Addresses |
 |----------|---------------------|----------------------|
-| Jump Box | Yes                 | 64.72.118.76         |
+| Jump Box | Yes                 | 1.129.107.205        |
 | ELK      | No                  | 10.0.0.1-254         |
 | DVWA 1   | No                  | 10.0.0.1-254         |
 | DVWA 2   | No                  | 10.0.0.1-254         |
+| DVWA 3   | No                  | 10.0.0.1-254         |
 
 ### Elk Configuration
 
-Ansible was used to automate configuration of the ELK machine. No configuration was performed manually, which is advantageous because...
-
-- _TODO: What is the main advantage of automating configuration with Ansible?_
+Ansible was used to automate configuration of the ELK machine. No configuration was performed manually, which is advantageous because it drastically reduces the potential for human error and makes it easy and possible to configure potentially thousands of identical machines all at once. 
 
 The playbook implements the following tasks:
-- _TODO: In 3-5 bullets, explain the steps of the ELK installation play. E.g., install Docker; download image; etc._
-- ...
-- ...
+- _Install apt packages: docker.io, python-3pip.
+- _Install pip package: docker python module.
+- _Set the vm.max_map_count to 262144 and configure the target VM to use more memory.
+- _Download and launch the Docker container called sebp/elk:761 configured to start up on boot and start with the following port mappings:
+-   _5601:5601
+-   _9200:9200
+-   _5044:5044
 
 
 The following screenshot displays the result of running `docker ps` after successfully configuring the ELK instance.
 
 - _TODO_: Update the image file path with the name of your screenshot of docker ps output:
 
-  ![STUDENT TODO: Update image file path](Images/docker_ps_output.png)
-
+  ![](Diagrams/Docker-ps-output.png)
 
 
 The playbook is duplicated below.
@@ -133,7 +134,7 @@ The playbook is duplicated below.
 ```
 
 ### Target Machines & Beats
-This ELK server is configured to monitor the DVWA 1 and DVWA 2 VMs, at `10.0.0.5` and `10.0.0.6`, respectively.
+This ELK server is configured to monitor the DVWA 1, DVWA 2, and DVWA 3 VMs, at `10.0.0.5`, `10.0.0.6`, and `10.0.0.7` respectively.
 
 We have installed the following Beats on these machines:
 - Filebeat
@@ -164,7 +165,7 @@ The playbook below installs Metricbeat on the target hosts. The playbook for ins
     # Use copy module
   - name: drop in metricbeat config
     copy:
-      src: /etc/ansible/files/metricbeat-config.yml
+      src: /etc/ansible/roles/metricbeat-config.yml
       dest: /etc/metricbeat/metricbeat.yml
 
     # Use command module
@@ -209,9 +210,10 @@ $ cat > hosts <<EOF
 [webservers]
 10.0.0.5
 10.0.0.6
+10.0.0.7
 
 [elk]
-10.0.0.8
+10.1.0.4
 EOF
 ```
 
@@ -226,9 +228,10 @@ After this, the commands below run the playbook:
 
 To verify success, wait five minutes to give ELK time to start up. 
 
-Then, run: `curl http://10.0.0.8:5601`. This is the address of Kibana. If the installation succeeded, this command should print HTML to the console.
+Then, run: `curl http://10.1.0.4:5601`. This is the address of Kibana. If the installation succeeded, this command should print HTML to the console.
 
 
 ---
+
 
   
