@@ -11,7 +11,7 @@ This document contains the following details:
 ### Description of the Topology
 This repository includes code defining the infrastructure below. 
 
-![](Diagrams/RedTeam-Network-Diagram.png)
+![](Diagrams/RedTeam-Network-Diagram-ELK.png)
 
 The main purpose of this network is to expose a load-balanced and monitored instance of DVWA, the "D*mn Vulnerable Web Application"
 
@@ -75,7 +75,7 @@ The following screenshot displays the result of running `docker ps` after succes
 
 - _TODO_: Update the image file path with the name of your screenshot of docker ps output:
 
-  ![](Diagrams/Docker-ps-output.png)
+  ![](Diagrams/Docker-ps-output.PNG)
 
 
 The playbook is duplicated below.
